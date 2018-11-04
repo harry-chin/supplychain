@@ -1,0 +1,114 @@
+{
+    "name": "itrazo-supplier",
+    "x-type": "hlfv1",
+    "x-commitTimeout": 300,
+    "version": "1.0.0",
+  
+    "client": {
+      "organization": "Supplier",
+      "connection": {
+        "timeout": {
+          "peer": {
+            "endorser": "300",
+            "eventHub": "300",
+            "eventReg": "300"
+          },
+          "orderer": "300"
+        }
+      }
+    },
+  
+    "orderers": {
+      "orderer.itrazo.com": {
+        "url": "grpc://localhost:7050"
+      }
+    },
+  
+    "channels": {
+      "mainchannel": {
+        "orderers": ["orderer.itrazo.com"],
+        "peers": {
+          "peer0.supplier.itrazo.com": {},
+          "peer0.manufacturer.itrazo.com": {},
+          "peer0.logistics.itrazo.com": {},
+          "peer0.distributor.itrazo.com": {},
+          "peer0.retailer.itrazo.com": {}
+        }
+      }
+    },
+  
+    "organizations": {
+      "Supplier": {
+        "mspid": "SupplierMSP",
+        "peers": ["peer0.supplier.itrazo.com"],
+        "certificateAuthorities": ["ca.supplier.itrazo.com"]
+      },
+      "Manufacturer": {
+        "mspid": "ManufacturerMSP",
+        "peers": ["peer0.manufacturer.itrazo.com"],
+        "certificateAuthorities": ["ca.manufacturer.itrazo.com"]
+      },
+      "Logistics": {
+        "mspid": "LogisticsMSP",
+        "peers": ["peer0.logistics.itrazo.com"],
+        "certificateAuthorities": ["ca.logistics.itrazo.com"]
+      },
+      "Distributor": {
+        "mspid": "DistributorMSP",
+        "peers": ["peer0.distributor.itrazo.com"],
+        "certificateAuthorities": ["ca.distributor.itrazo.com"]
+      },
+      "Retailer": {
+        "mspid": "RetailerMSP",
+        "peers": ["peer0.retailer.itrazo.com"],
+        "certificateAuthorities": ["ca.retailer.itrazo.com"]
+      }
+    },
+  
+    "peers": {
+      "peer0.supplier.itrazo.com": {
+        "url": "grpc://localhost:10051",
+        "eventUrl": "grpc://localhost:10053"
+      },
+      "peer0.manufacturer.itrazo.com": {
+        "url": "grpc://localhost:11051",
+        "eventUrl": "grpc://localhost:11053"
+      },
+      "peer0.logistics.itrazo.com": {
+        "url": "grpc://localhost:11051",
+        "eventUrl": "grpc://localhost:12053"
+      },
+      "peer0.distributor.itrazo.com": {
+        "url": "grpc://localhost:11051",
+        "eventUrl": "grpc://localhost:13053"
+      },
+      "peer0.retailer.itrazo.com": {
+        "url": "grpc://localhost:11051",
+        "eventUrl": "grpc://localhost:14053"
+      }
+    },
+  
+    "certificateAuthorities": {
+      "ca.supplier.itrazo.com": {
+        "url": "http://localhost:10054",
+        "caName": "ca.supplier.itrazo.com"
+      },
+      "ca.manufacturer.itrazo.com": {
+        "url": "http://localhost:11054",
+        "caName": "ca.manufacturer.itrazo.com"
+      },
+      "ca.logistics.itrazo.com": {
+        "url": "http://localhost:12054",
+        "caName": "ca.logistics.itrazo.com"
+      },
+      "ca.distributor.itrazo.com": {
+        "url": "http://localhost:13054",
+        "caName": "ca.distributor.itrazo.com"
+      },
+      "ca.retailer.itrazo.com": {
+        "url": "http://localhost:14054",
+        "caName": "ca.retailer.itrazo.com"
+      }
+    }
+  }
+  

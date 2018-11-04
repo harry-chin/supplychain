@@ -1,0 +1,354 @@
+version: '2'
+
+networks:
+  itrazo:
+
+services:
+
+  ### orderer ###
+  orderer.itrazo.com:
+    container_name: orderer.itrazo.com
+    image: hyperledger/fabric-orderer:1.2.1
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/channel/main-genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/
+    #working_dir: /opt/gopath
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+        - ./:/etc/hyperledger/configtx
+        - ./crypto-config/ordererOrganizations/itrazo.com/orderers/orderer.itrazo.com/msp:/etc/hyperledger/msp/
+    networks:
+      - itrazo
+
+  ### supplier ###
+  #ca#
+  ca.supplier.itrazo.com:
+    image: hyperledger/fabric-ca:1.2.1
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.supplier.itrazo.com
+
+    ports:
+      - "10054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.supplier.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/8bf390fe20d54f05bbd8eb9d44661b291e8b90da43bd0089ba51f692380de5b7_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/supplier.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.supplier.itrazo.com
+    networks:
+      - itrazo
+  
+
+  #peer0#
+  peer0.supplier.itrazo.com:
+    container_name: peer0.supplier.itrazo.com
+    image: hyperledger/fabric-peer:1.2.1
+    environment:
+      - CORE_LOGGING_LEVEL=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.supplier.itrazo.com
+      - CORE_PEER_ADDRESS=peer0.supplier.itrazo.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_itrazo
+      - CORE_PEER_LOCALMSPID=SupplierMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/peer/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.supplier.itrazo.com:5984
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports: 
+      - 10051:7051
+      - 10053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./:/etc/hyperledger/configtx
+        - ./crypto-config/peerOrganizations/supplier.itrazo.com/peers/peer0.supplier.itrazo.com/msp:/etc/hyperledger/peer/msp
+        - ./crypto-config/peerOrganizations/supplier.itrazo.com/users:/etc/hyperledger/msp/users
+    depends_on:
+      - orderer.itrazo.com
+      - couchdb.supplier.itrazo.com
+    networks:
+      - itrazo
+
+  #couchdb#
+  couchdb.supplier.itrazo.com:
+    container_name: couchdb.supplier.itrazo.com
+    image: hyperledger/fabric-couchdb:0.4.10
+    ports:
+      - 10984:5984
+    environment:
+      DB_URL: http://localhost:5984/member_db
+    networks:
+      - itrazo
+
+### manufacturer ###
+  #ca#
+  ca.manufacturer.itrazo.com:
+    image: hyperledger/fabric-ca:1.2.1
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.manufacturer.itrazo.com
+
+    ports:
+      - "11054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.manufacturer.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/b7a668295ef9824e5427a1e364cb4d43f99059f59597a0b0e000806f6f883335_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/manufacturer.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.manufacturer.itrazo.com
+    networks:
+      - itrazo
+
+  #peer0#
+  peer0.manufacturer.itrazo.com:
+    container_name: peer0.manufacturer.itrazo.com
+    image: hyperledger/fabric-peer:1.2.1
+    environment:
+      - CORE_LOGGING_LEVEL=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.manufacturer.itrazo.com
+      - CORE_PEER_ADDRESS=peer0.manufacturer.itrazo.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_itrazo
+      - CORE_PEER_LOCALMSPID=ManufacturerMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/peer/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.manufacturer.itrazo.com:5984
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 11051:7051
+      - 11053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./:/etc/hyperledger/configtx
+        - ./crypto-config/peerOrganizations/manufacturer.itrazo.com/peers/peer0.manufacturer.itrazo.com/msp:/etc/hyperledger/peer/msp
+        - ./crypto-config/peerOrganizations/manufacturer.itrazo.com/users:/etc/hyperledger/msp/users
+    depends_on:
+      - orderer.itrazo.com
+      - couchdb.manufacturer.itrazo.com
+    networks:
+      - itrazo
+
+  #couchdb#
+  couchdb.manufacturer.itrazo.com:
+    container_name: couchdb.manufacturer.itrazo.com
+    image: hyperledger/fabric-couchdb:0.4.10
+    ports:
+      - 11984:5984
+    environment:
+      DB_URL: http://localhost:5984/member_db
+    networks:
+      - itrazo
+### logistics ###
+  #ca#
+  ca.logistics.itrazo.com:
+    image: hyperledger/fabric-ca:1.2.1
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.logistics.itrazo.com
+
+    ports:
+      - "12054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.logistics.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/a5a09d5f0dce457e9cbb4ae96f2c9bdc0fada7fb4e6485a54877a572bc67b30d_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/logistics.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.logistics.itrazo.com
+    networks:
+      - itrazo
+
+  #peer0#
+  peer0.logistics.itrazo.com:
+    container_name: peer0.logistics.itrazo.com
+    image: hyperledger/fabric-peer:1.2.1
+    environment:
+      - CORE_LOGGING_LEVEL=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.logistics.itrazo.com
+      - CORE_PEER_ADDRESS=peer0.logistics.itrazo.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_itrazo
+      - CORE_PEER_LOCALMSPID=LogisticsMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/peer/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.logistics.itrazo.com:5984
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 12051:7051
+      - 12053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./:/etc/hyperledger/configtx
+        - ./crypto-config/peerOrganizations/logistics.itrazo.com/peers/peer0.logistics.itrazo.com/msp:/etc/hyperledger/peer/msp
+        - ./crypto-config/peerOrganizations/logistics.itrazo.com/users:/etc/hyperledger/msp/users
+    depends_on:
+      - orderer.itrazo.com
+      - couchdb.logistics.itrazo.com
+    networks:
+      - itrazo
+
+  #couchdb#
+  couchdb.logistics.itrazo.com:
+    container_name: couchdb.logistics.itrazo.com
+    image: hyperledger/fabric-couchdb:0.4.10
+    ports:
+      - 12984:5984
+    environment:
+      DB_URL: http://localhost:5984/member_db
+    networks:
+      - itrazo
+
+### distributor ###
+  #ca#
+  ca.distributor.itrazo.com:
+    image: hyperledger/fabric-ca:1.2.1
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.distributor.itrazo.com
+
+    ports:
+      - "13054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.distributor.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/423466b439b803e84d40e4e326e5ce8e8c8eec2fa47ea550caad045ac7a3259f_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/distributor.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.distributor.itrazo.com
+    networks:
+      - itrazo
+
+  #peer0#
+  peer0.distributor.itrazo.com:
+    container_name: peer0.distributor.itrazo.com
+    image: hyperledger/fabric-peer:1.2.1
+    environment:
+      - CORE_LOGGING_LEVEL=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.distributor.itrazo.com
+      - CORE_PEER_ADDRESS=peer0.distributor.itrazo.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_itrazo
+      - CORE_PEER_LOCALMSPID=DistributorMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/peer/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.distributor.itrazo.com:5984
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 13051:7051
+      - 13053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./:/etc/hyperledger/configtx
+        - ./crypto-config/peerOrganizations/distributor.itrazo.com/peers/peer0.distributor.itrazo.com/msp:/etc/hyperledger/peer/msp
+        - ./crypto-config/peerOrganizations/distributor.itrazo.com/users:/etc/hyperledger/msp/users
+    depends_on:
+      - orderer.itrazo.com
+      - couchdb.distributor.itrazo.com
+    networks:
+      - itrazo
+
+  #couchdb#
+  couchdb.distributor.itrazo.com:
+    container_name: couchdb.distributor.itrazo.com
+    image: hyperledger/fabric-couchdb:0.4.10
+    ports:
+      - 13984:5984
+    environment:
+      DB_URL: http://localhost:5984/member_db
+    networks:
+      - itrazo
+
+### retailer ###
+  #ca#
+  ca.retailer.itrazo.com:
+    image: hyperledger/fabric-ca:1.2.1
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.retailer.itrazo.com
+
+    ports:
+      - "14054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.retailer.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/e641088cff8435d243d9a518434f9f4a2c0847670abb1174ba6562a26f4cedb1_skretailer -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/retailer.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.retailer.itrazo.com
+    networks:
+      - itrazo
+
+  #peer0#
+  peer0.retailer.itrazo.com:
+    container_name: peer0.retailer.itrazo.com
+    image: hyperledger/fabric-peer:1.2.1
+    environment:
+      - CORE_LOGGING_LEVEL=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.retailer.itrazo.com
+      - CORE_PEER_ADDRESS=peer0.retailer.itrazo.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_itrazo
+      - CORE_PEER_LOCALMSPID=RetailerMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/peer/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.retailer.itrazo.com:5984
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 14051:7051
+      - 14053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./:/etc/hyperledger/configtx
+        - ./crypto-config/peerOrganizations/retailer.itrazo.com/peers/peer0.retailer.itrazo.com/msp:/etc/hyperledger/peer/msp
+        - ./crypto-config/peerOrganizations/retailer.itrazo.com/users:/etc/hyperledger/msp/users
+    depends_on:
+      - orderer.itrazo.com
+      - couchdb.retailer.itrazo.com
+    networks:
+      - itrazo
+
+  #couchdb#
+  couchdb.retailer.itrazo.com:
+    container_name: couchdb.retailer.itrazo.com
+    image: hyperledger/fabric-couchdb:0.4.10
+    ports:
+      - 14984:5984
+    environment:
+      DB_URL: http://localhost:5984/member_db
+    networks:
+      - itrazo
+
+### fabric-cli ###
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:1.2.1
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=
+      - CORE_PEER_LOCALMSPID=
+      - CORE_PEER_MSPCONFIGPATH=
+    working_dir: /opt/gopath
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config:/opt/gopath/crypto-config/
+        - ./channel:/opt/gopath/channel/
+        - ./createChannel.sh:/opt/gopath/createChannel.sh
+        #- ../artifacts:/opt/gopath/artifacts/
+        #- ../createChannel.sh:/opt/gopath/createChannel.sh
+    depends_on:
+      - orderer.itrazo.com
+      - ca.supplier.itrazo.com
+      - peer0.supplier.itrazo.com
+      - ca.manufacturer.itrazo.com
+      - peer0.manufacturer.itrazo.com
+      
+    networks:
+      - itrazo

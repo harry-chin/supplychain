@@ -1,0 +1,178 @@
+version: '2'
+
+networks:
+  itrazo:
+
+services:
+
+  ### orderer ###
+  orderer.itrazo.com:
+    container_name: orderer.itrazo.com
+    image: hyperledger/fabric-orderer:1.2.1
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/channel/main-genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/
+    #working_dir: /opt/gopath
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+        - ../:/etc/hyperledger/configtx
+        - ../crypto-config/ordererOrganizations/itrazo.com/orderers/orderer.itrazo.com/msp:/etc/hyperledger/msp/
+    networks:
+      - itrazo
+
+  ### grower ###
+  #ca#
+  ca.grower.itrazo.com:
+    image: hyperledger/fabric-ca:1.2.1
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.grower.itrazo.com
+
+    ports:
+      - "10054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.grower.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/bcbd7448836ddac71872392cecc674b693e68c5364f42133df6ff919d59f78d3_sk -b admin:adminpw -d'
+    volumes:
+      - ../crypto-config/peerOrganizations/grower.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.grower.itrazo.com
+    networks:
+      - itrazo
+  
+
+  #peer0#
+  peer0.grower.itrazo.com:
+    container_name: peer0.grower.itrazo.com
+    image: hyperledger/fabric-peer:1.2.1
+    environment:
+      - CORE_LOGGING_LEVEL=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.grower.itrazo.com
+      - CORE_PEER_ADDRESS=peer0.grower.itrazo.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=docker_itrazo
+      - CORE_PEER_LOCALMSPID=GrowerMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/peer/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.grower.itrazo.com:5984
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports: 
+      - 10051:7051
+      - 10053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../:/etc/hyperledger/configtx
+        - ../crypto-config/peerOrganizations/grower.itrazo.com/peers/peer0.grower.itrazo.com/msp:/etc/hyperledger/peer/msp
+        - ../crypto-config/peerOrganizations/grower.itrazo.com/users:/etc/hyperledger/msp/users
+    depends_on:
+      - orderer.itrazo.com
+      - couchdb.grower.itrazo.com
+    networks:
+      - itrazo
+
+  #couchdb#
+  couchdb.grower.itrazo.com:
+    container_name: couchdb.grower.itrazo.com
+    image: hyperledger/fabric-couchdb:0.4.10
+    ports:
+      - 10984:5984
+    environment:
+      DB_URL: http://localhost:5984/member_db
+    networks:
+      - itrazo
+### ninemile ###
+
+  #ca#
+  ca.ninemile.itrazo.com:
+    image: hyperledger/fabric-ca:1.2.1
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.ninemile.itrazo.com
+
+    ports:
+      - "11054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.ninemile.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/5ee2b05746549c3a720091c9c2cc174a005ef292159f3658b9307680f374e3c7_sk -b admin:adminpw -d'
+    volumes:
+      - ../crypto-config/peerOrganizations/ninemile.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.ninemile.itrazo.com
+    networks:
+      - itrazo
+
+  #peer0#
+  peer0.ninemile.itrazo.com:
+    container_name: peer0.ninemile.itrazo.com
+    image: hyperledger/fabric-peer:1.2.1
+    environment:
+      - CORE_LOGGING_LEVEL=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.ninemile.itrazo.com
+      - CORE_PEER_ADDRESS=peer0.ninemile.itrazo.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=docker_itrazo
+      - CORE_PEER_LOCALMSPID=NinemileMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/peer/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.ninemile.itrazo.com:5984
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 11051:7051
+      - 11053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../:/etc/hyperledger/configtx
+        - ../crypto-config/peerOrganizations/ninemile.itrazo.com/peers/peer0.ninemile.itrazo.com/msp:/etc/hyperledger/peer/msp
+        - ../crypto-config/peerOrganizations/ninemile.itrazo.com/users:/etc/hyperledger/msp/users
+    depends_on:
+      - orderer.itrazo.com
+      - couchdb.ninemile.itrazo.com
+    networks:
+      - itrazo
+
+  #couchdb#
+  couchdb.ninemile.itrazo.com:
+    container_name: couchdb.ninemile.itrazo.com
+    image: hyperledger/fabric-couchdb:0.4.10
+    ports:
+      - 11984:5984
+    environment:
+      DB_URL: http://localhost:5984/member_db
+    networks:
+      - itrazo
+
+### fabric-cli ###
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:1.2.1
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=
+      - CORE_PEER_LOCALMSPID=
+      - CORE_PEER_MSPCONFIGPATH=
+    working_dir: /opt/gopath
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config:/opt/gopath/crypto-config/
+        - ../channel:/opt/gopath/channel/
+        - ../createChannel.sh:/opt/gopath/createChannel.sh
+        #- ../artifacts:/opt/gopath/artifacts/
+        #- ../createChannel.sh:/opt/gopath/createChannel.sh
+    depends_on:
+      - orderer.itrazo.com
+      - ca.grower.itrazo.com
+      - peer0.grower.itrazo.com
+      - ca.ninemile.itrazo.com
+      - peer0.ninemile.itrazo.com
+      
+    networks:
+      - itrazo

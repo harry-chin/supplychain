@@ -1,0 +1,58 @@
+### retailer ###
+  #ca#
+  ca.retailer.itrazo.com:
+    image: hyperledger/fabric-ca:1.2.1
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.retailer.itrazo.com
+
+    ports:
+      - "14054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.retailer.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/5ee2b05746549c3a720091c9c2cc174a005ef292159f3658b9307680f374e3c7_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/retailer.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.retailer.itrazo.com
+    networks:
+      - itrazo
+
+  #peer0#
+  peer0.retailer.itrazo.com:
+    container_name: peer0.retailer.itrazo.com
+    image: hyperledger/fabric-peer:1.2.1
+    environment:
+      - CORE_LOGGING_LEVEL=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.retailer.itrazo.com
+      - CORE_PEER_ADDRESS=peer0.retailer.itrazo.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=itrazo_itrazo
+      - CORE_PEER_LOCALMSPID=RetailerMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/peer/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.retailer.itrazo.com:5984
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 14051:7051
+      - 14053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./:/etc/hyperledger/configtx
+        - ./crypto-config/peerOrganizations/retailer.itrazo.com/peers/peer0.retailer.itrazo.com/msp:/etc/hyperledger/peer/msp
+        - ./crypto-config/peerOrganizations/retailer.itrazo.com/users:/etc/hyperledger/msp/users
+    depends_on:
+      - orderer.itrazo.com
+      - couchdb.retailer.itrazo.com
+    networks:
+      - itrazo
+
+  #couchdb#
+  couchdb.retailer.itrazo.com:
+    container_name: couchdb.retailer.itrazo.com
+    image: hyperledger/fabric-couchdb:0.4.10
+    ports:
+      - 14984:5984
+    environment:
+      DB_URL: http://localhost:5984/member_db
+    networks:
+      - itrazo

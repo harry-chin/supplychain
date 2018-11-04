@@ -1,0 +1,47 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+   
+# ---------------------------------------------------------------------------
+# "OrdererOrgs" - Definition of organizations managing orderer nodes
+# ---------------------------------------------------------------------------
+OrdererOrgs:
+  - Name: Orderer
+    Domain: itrazo.com
+    Specs:
+      - Hostname: orderer
+# ---------------------------------------------------------------------------
+# "PeerOrgs" - Definition of organizations managing peer nodes
+# ---------------------------------------------------------------------------
+PeerOrgs:
+  - Name: Supplier
+    Domain: supplier.itrazo.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: Manufacturer
+    Domain: manufacturer.itrazo.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: Logistics
+    Domain: logistics.itrazo.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: Distributor
+    Domain: distributor.itrazo.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: Retailer
+    Domain: retailer.itrazo.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
