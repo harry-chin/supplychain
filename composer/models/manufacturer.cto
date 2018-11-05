@@ -1,0 +1,7 @@
+namespace itrazo.manufacturer
+
+import itrazo.base.Actor
+
+participant Manufacturer extends Actor {
+  
+}

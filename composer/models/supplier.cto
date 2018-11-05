@@ -1,0 +1,30 @@
+namespace itrazo.supplier
+
+import itrazo.base.Actor
+import itrazo.base.Batch
+import itrazo.manufacturer.Manufacturer
+import itrazo.logistics.Logistics
+
+participant Supplier extends Actor {
+  --> Yard[] yards optional
+}
+
+asset Yard identified by yardId {
+  o String yardId
+  o String region
+}
+
+asset RawMaterial extends Batch {
+  o String type
+  o DateTime txDateTime
+  --> Supplier supplier
+  --> Yard yard
+}
+
+transaction SellRawMaterial {
+  o Integer quanity
+  o DateTime txDateTime
+  --> RawMaterial rawMaterial
+  --> Manufacturer buyer
+  --> Logistics logistics
+}

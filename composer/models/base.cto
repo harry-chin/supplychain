@@ -15,24 +15,34 @@
 /**
  * Write your model definitions here
  */
-
-namespace itrazo
+namespace itrazo.base
 
 asset Commodity identified by tradingSymbol {
     o String tradingSymbol
     o String description
     o String mainExchange
     o Double quantity
-    --> Trader owner
+    --> Actor owner
 }
-participant Trader identified by tradeId {
-    o String tradeId
-    o String firstName
-    o String lastName
+abstract participant Actor identified by id {
+    o String id
+    o String name
 }
+
+abstract asset Batch identified by id {
+  o String id
+  o Double amount // can be quantity or weight
+}
+
+// transaction sellBatch {
+//   o Double amount
+//   --> Batch batch
+//   --> Actor buyer
+// }
+
 transaction TradeCommodity {
     --> Commodity commodity
-    --> Trader newOwner
+    --> Actor newOwner
 }
 
 event TradeNotification {

@@ -1,0 +1,7 @@
+namespace itrazo.logistics
+
+import itrazo.base.Actor
+
+participant Logistics extends Actor {
+  
+}

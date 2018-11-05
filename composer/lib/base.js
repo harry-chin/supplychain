@@ -19,15 +19,15 @@
 
 /**
  * Sample transaction
- * @param {itrazo.TradeCommodity} trade
+ * @param {itrazo.base.TradeCommodity} trade
  * @transaction
  */
 async function tradeCommodity(trade) {
     trade.commodity.owner = trade.newOwner;
-    let assetRegistry = await getAssetRegistry('itrazo.Commodity');
+    let assetRegistry = await getAssetRegistry('itrazo.base.Commodity');
 
     // emit a notification that a trade has occurred
-    let tradeNotification = getFactory().newEvent('itrazo', 'TradeNotification');
+    let tradeNotification = getFactory().newEvent('itrazo.base', 'TradeNotification');
     tradeNotification.commodity = trade.commodity;
     emit(tradeNotification);
 
@@ -37,19 +37,19 @@ async function tradeCommodity(trade) {
 
 /**
  * Remove all high volume commodities
- * @param {itrazo.RemoveHighQuantityCommodities} remove - the remove to be processed
+ * @param {itrazo.base.RemoveHighQuantityCommodities} remove - the remove to be processed
  * @transaction
  */
 
 async function removeHighQuantityCommodities(remove) {
-     let assetRegistry = await getAssetRegistry('itrazo.Commodity');
+     let assetRegistry = await getAssetRegistry('itrazo.base.Commodity');
      let results = await query('selectCommoditiesWithHighQuantity');
 
      for (let n = 0; n < results.length; n++) {
          let commodity = results[n];
 
          // emit a notification that a trade was removed
-         let removeNotification = getFactory().newEvent('itrazo', 'RemoveNotification');
+         let removeNotification = getFactory().newEvent('itrazo.base', 'RemoveNotification');
          removeNotification.commodity = commodity;
          emit(removeNotification);
 
