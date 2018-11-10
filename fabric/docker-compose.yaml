@@ -37,7 +37,7 @@ services:
 
     ports:
       - "10054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.supplier.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/8bf390fe20d54f05bbd8eb9d44661b291e8b90da43bd0089ba51f692380de5b7_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.supplier.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/c98567a4d41e2f0f6ec3ffae91b80377fe37ae766f6bbf10cb894a26a18119e5_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/supplier.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.supplier.itrazo.com
@@ -97,7 +97,7 @@ services:
 
     ports:
       - "11054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.manufacturer.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/b7a668295ef9824e5427a1e364cb4d43f99059f59597a0b0e000806f6f883335_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.manufacturer.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/ae492a326c6c1d31202d305c67f189dadd27823c0e64e6106f96eb53a8b12898_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/manufacturer.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.manufacturer.itrazo.com
@@ -155,7 +155,7 @@ services:
 
     ports:
       - "12054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.logistics.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/a5a09d5f0dce457e9cbb4ae96f2c9bdc0fada7fb4e6485a54877a572bc67b30d_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.logistics.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/a0082b95a1145f7671b556c52b8ecc7ec2309be9314c54744c08559ed29aeae3_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/logistics.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.logistics.itrazo.com
@@ -214,7 +214,7 @@ services:
 
     ports:
       - "13054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.distributor.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/423466b439b803e84d40e4e326e5ce8e8c8eec2fa47ea550caad045ac7a3259f_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.distributor.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/3d0efc82f46c9cee74faa63acbaedd9509f6ebc63b202f62649940dbdafe13a3_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/distributor.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.distributor.itrazo.com
@@ -273,7 +273,7 @@ services:
 
     ports:
       - "14054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.retailer.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/e641088cff8435d243d9a518434f9f4a2c0847670abb1174ba6562a26f4cedb1_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.retailer.itrazo.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/8539a812efc09b797725ddfd3d4d93bd105052b0ea6acdcdef9fff48d6d06885_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/retailer.itrazo.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.retailer.itrazo.com

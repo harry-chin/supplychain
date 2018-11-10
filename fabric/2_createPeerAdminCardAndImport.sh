@@ -24,9 +24,5 @@ composer card import -f ./id-cards/PeerAdmin@itrazo-${ORGNAME}.card
 done
 echo "$FONTCOLOR# Loop Finished for creating and importing PeerAdmin cards$NC"
 
-echo "${RED}### Please confirm that CA keyfile matches in docker-compose.yaml! ###"
-for ORGNAME in "${ORG[@]}";
-do
-export KEYSTORE=$(ls ./crypto-config/peerOrganizations/${ORGNAME}.itrazo.com/ca/*sk | xargs -n 1 basename)
-echo "${FONTCOLOR}# ${ORGNAME}-keystore: '$KEYSTORE'${NC}"
-done
+# echo "${RED}### Please confirm that CA keyfile matches in docker-compose.yaml! ###"
+. ./verifyCaKeyfile.sh

@@ -14,5 +14,5 @@ echo "$FONTCOLOR* FABRIC_CFG_PATH = $PWD $NC"
 echo "$FONTCOLOR* CHANNEL_NAME = $CHANNEL_NAME $NC"
 echo "$FONTCOLOR* PROJECT = $PROJECT $NC"
 
-declare -a ORG=("supplier" "manufacturer" "logistics" "distributor" "retailer")
-declare -a ORG_MSP=("SupplierMSP" "ManufacturerMSP" "LogisticsMSP" "DistributorMSP" "RetailerMSP")
+ORG=("supplier" "manufacturer" "logistics" "distributor" "retailer")
+ORG_MSP=("SupplierMSP" "ManufacturerMSP" "LogisticsMSP" "DistributorMSP" "RetailerMSP")

@@ -75,15 +75,15 @@
         "eventUrl": "grpc://localhost:11053"
       },
       "peer0.logistics.itrazo.com": {
-        "url": "grpc://localhost:11051",
+        "url": "grpc://localhost:12051",
         "eventUrl": "grpc://localhost:12053"
       },
       "peer0.distributor.itrazo.com": {
-        "url": "grpc://localhost:11051",
+        "url": "grpc://localhost:13051",
         "eventUrl": "grpc://localhost:13053"
       },
       "peer0.retailer.itrazo.com": {
-        "url": "grpc://localhost:11051",
+        "url": "grpc://localhost:14051",
         "eventUrl": "grpc://localhost:14053"
       }
     },
